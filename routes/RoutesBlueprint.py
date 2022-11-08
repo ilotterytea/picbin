@@ -22,3 +22,4 @@ from .index import index
 from .upload import upload
 from .retrieve import retrieve
 from .burn import burn
+from .dank_api import get_config_data
