@@ -9,7 +9,7 @@ cd bin
 2. Set up and activate a virtualenv (You must have installed virtualenv before):
 ```bash
 python3 -m venv venv
-venv/bin/activate
+. venv/bin/activate
 ```
 3. Download all from `requirements.txt`:
 ```bash
