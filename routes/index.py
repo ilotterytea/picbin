@@ -13,9 +13,10 @@
 # limitations under the License.
 
 from .RoutesBlueprint import blueprint
+from flask import render_template
 
 
 @blueprint.get("/")
 def index():
     """GET route for index page."""
-    return "yo"
+    return render_template("index.html")
