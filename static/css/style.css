@@ -15,9 +15,19 @@
  */
 @import url('https://use.fontawesome.com/releases/v6.2.0/css/all.css');
 
+:root {
+    --background: #151515;
+    --color: #eee;
+
+    --navbar: #1d1a1abb;
+    
+    --anchor: #c75a5a;
+    --anchor-hover: #f75454;
+    --anchor-before: #5f2c2c;
+}
 html, body {
-    background: #151515;
-    color: #ddd;
+    background: url("../img/bg.png") repeat;
+    color: var(--color);
 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;;
     
@@ -30,37 +40,88 @@ h1, h2, h3, p {
     margin: 0;
 }
 
-.container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    min-height: 100vh;
+a {
+    color: var(--anchor);
+    text-decoration: none;
 }
 
-.wrapper {
+a:hover {
+    color: var(--anchor-hover);
+    background: var(--anchor);
+    text-decoration: line-through;
+}
+
+.container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar {
+    display: flex;
+    flex-direction: row;
+    min-height: 16px;
+    background: var(--navbar);
+    padding: 0 6px;
+}
+
+.navbar div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0 4px;
+}
+
+.navbar div#brand img {
+    width: 32px;
+    height: auto;
+}
+
+.navbar div#links { flex-grow: 1; }
+.inlinelist {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    list-style: none;
+    padding: 0;
+    white-space: nowrap;
+}
+
+.inlinelist li {
+    margin: 0 4px;
+}
+
+.page {
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-section {
-    margin: 10px;
+/* DRAG AND DROP */
+.draganddrop {
+    background: var(--anchor);
+    color: var(--anchor-before);
+    padding: 16px;
+    width: 100%;
+    
     display: flex;
-}
-
-section#brand {
-    display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
+
+    border: var(--anchor-before) dashed 4px;
 }
 
-section#brand * {
-    margin: 0 8px;
+.draganddrop:hover {
+    background: var(--anchor-hover);
+    color: var(--anchor);
+    border-color: var(--anchor);
+    cursor: pointer;
 }
 
-section#brand img {
-    max-width: 64px;
-    max-height: 64px;
+section#file_upload {
+    min-width: 512px;
 }

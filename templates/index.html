@@ -21,21 +21,102 @@
         <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}" />
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
     </head>
     <body>
         <div class="container">
-            <div class="wrapper">
-                <section id="brand">
+            
+
+            <div class="page">
+
+                <div id="brand">
                     <img src="{{ url_for('static', filename='img/favicon.png') }}" />
-                    <h1>Bin!</h1>
+                    <b>Bin!</b>
+                </div>
+
+                <section id="file_upload">
+                    <input type="file" name="file" id="file_input" style="display:none;">
+                    <button id="file_b" class="draganddrop" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);" onclick="lol(event);">
+                        <p>Drag and drop your file here!</p>
+                        <p>Or just press me to select a file.</p>
+                    </button>
                 </section>
-                <section id="form">
-                    <form name="upload_form">
-                        <input type="file" name="file" id="file">
-                        <button type="submit">Submit!</button>
-                    </form>
-                </section>
+            </div>
+
+            <div class="navbar">
+                <div id="links">
+                    <ul class="inlinelist">
+                        <li><a href="https://docs.ilotterytea.kz/bin">Wiki</a></li>
+                        <li><a href="https://docs.ilotterytea.kz/bin/dev/api">API</a></li>
+                        <li><a href="https://github.com/notdankenough/picbin">Source code</a></li>
+                    </ul>
+                </div>
+                <div id="data">
+                    <ul class="inlinelist">
+                        <li><a href="/login">Log in...</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </body>
+    <script>
+        function lol(ev) {
+            let fi = document.getElementById("file_input");
+            let fb = document.getElementById("file_b");
+
+            fb.addEventListener("click", () => {
+                fi.click();
+            });
+
+            fi.addEventListener("close", (ev) => {
+                console.log(ev);
+            });
+        }
+        
+        function dropHandler(ev) {
+            console.log('File(s) dropped');
+
+            // Prevent default behavior (Prevent file from being opened)
+            ev.preventDefault();
+
+            if (ev.dataTransfer.items) {
+                // Use DataTransferItemList interface to access the file(s)
+                [...ev.dataTransfer.items].forEach((item, i) => {
+                // If dropped items aren't files, reject them
+                if (item.kind === 'file') {
+                    const file = item.getAsFile();
+                    console.log(file);
+                    console.log(`… file[${i}].name = ${file.name}`);
+                    let test = new FormData();
+                    test.set("file", file, file.name);
+
+                    $.ajax({
+                        type: "POST",
+                        data: test,
+                        processData: false,
+                        contentType: false,
+                        url: "/",
+                        success: (data) => {
+                            console.log(data)
+                        } 
+                    });
+                }
+                });
+            } else {
+                // Use DataTransfer interface to access the file(s)
+                [...ev.dataTransfer.files].forEach((file, i) => {
+                console.log(`… file[${i}].name = ${file.name}`);
+                });
+            }
+        }
+
+        function dragOverHandler(ev) {
+            console.log('File(s) in drop zone');
+
+            // Prevent default behavior (Prevent file from being opened)
+            ev.preventDefault();
+        }
+
+
+    </script>
 </html>
