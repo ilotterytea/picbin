@@ -1,0 +1,31 @@
+BIN.RS (NotDankEnough's Bin written in Rust)
+
+API USAGE
+    POST /upload
+
+        Post the "multipart/form-data" form with the file in the "file" field.
+
+        Returns status code 201 (CREATED) and JSON file record if processed successfully.
+        Returns status code 400 (BAD REQUEST) if the request has no form or the "file" field is empty.
+
+    GET /[ID].[EXT]
+        Get the file by its ID.
+
+        PARAMETERS:
+            [ID] - File ID.
+            [EXT] - File extension.
+
+        Returns status code 200 (OK) and file if found.
+        Returns status code 404 (NOT FOUND) if file not exists.
+
+    DELETE /[ID]?key=[KEY]
+        Delete the file by its ID and secret key.
+
+        PARAMETERS:
+            [ID] - File ID.
+
+        QUERY:
+            [KEY] - Secret key.
+
+        Returns status code 200 (OK) if the file has been successfully deleted from the server.
+        Returns status code 401 (UNAUTHORIZED) if the secret key does not match the file's secret key.
