@@ -24,7 +24,7 @@ from utils.files import FileIdGen, FileGenType, get_file_hash
 from utils import Configuration, JSONManipulator
 
 
-@blueprint.post("/")
+@blueprint.post("/upload")
 def upload():
     """
     POST route for uploading file.
@@ -94,8 +94,8 @@ def upload():
     data = {
         "file": {
             "data": FILE_DATA.__dict__,
-            "get": "{}{}{}".format(request.base_url, file_id, EXT),
-            "delete": "{}{}{}?key={}".format(request.base_url, file_id, EXT, SECRET_KEY)
+            "get": "{}{}{}".format(request.host_url, file_id, EXT),
+            "delete": "{}{}{}?key={}".format(request.host_url, file_id, EXT, SECRET_KEY)
         },
         "status": 200,
         "message": "Success!"
