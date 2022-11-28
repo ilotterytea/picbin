@@ -13,10 +13,15 @@
 # limitations under the License.
 
 from .RoutesBlueprint import blueprint
-from flask import render_template
+from flask import render_template, send_from_directory, send_file
+from os.path import join
 
 
 @blueprint.get("/")
 def index():
     """GET route for index page."""
     return render_template("index.html")
+
+@blueprint.get("/favicon.ico")
+def favicon():
+    return send_file(f"static/favicon.ico")
