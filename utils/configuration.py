@@ -31,12 +31,12 @@ class Configuration:
         if cls.content.has_option("SERVER", "DEFAULT_KEEPALIVE_MS") is False: cls.content.set("SERVER", "DEFAULT_KEEPALIVE_MS", "7200000"); should_be_rewritten = True;
         if cls.content.has_option("SERVER", "MAX_KEEPALIVE_MS") is False: cls.content.set("SERVER", "MAX_KEEPALIVE_MS", "1209600000"); should_be_rewritten = True;
         if cls.content.has_option("SERVER", "DECLINE_MIMETYPES") is False: cls.content.set("SERVER", "DECLINE_MIMETYPES", "image/jpeg"); should_be_rewritten = True;
-        if cls.content.has_option("SERVER", "ENABLE_DELETION_BY_LINK") is False: cls.content.set("SERVER", "ENABLE_DELETION_BY_LINK", "True"); should_be_rewritten = True;
+        if cls.content.has_option("SERVER", "ENABLE_DELETION_BY_LINK") is False: cls.content.set("SERVER", "ENABLE_DELETION_BY_LINK", "1"); should_be_rewritten = True;
 
         if cls.content.has_section("FILES") is False: cls.content.add_section("FILES"); should_be_rewritten = True;
         if cls.content.has_option("FILES", "NAME_LENGTH") is False: cls.content.set("FILES", "NAME_LENGTH", "6"); should_be_rewritten = True;
         if cls.content.has_option("FILES", "FILE_GEN_TYPE") is False: cls.content.set("FILES", "FILE_GEN_TYPE", "0"); should_be_rewritten = True;
-        if cls.content.has_option("FILES", "GENERATE_LINKED_FILES") is False: cls.content.set("FILES", "GENERATE_LINKED_FILES", "True"); should_be_rewritten = True;
+        if cls.content.has_option("FILES", "GENERATE_LINKED_FILES") is False: cls.content.set("FILES", "GENERATE_LINKED_FILES", "0"); should_be_rewritten = True;
 
         if should_be_rewritten is True:
             cls.save(file_path)
