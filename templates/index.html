@@ -95,9 +95,10 @@
                         data: test,
                         processData: false,
                         contentType: false,
-                        url: "/",
+                        url: "/upload",
                         success: (data) => {
                             console.log(data)
+							window.location = data.file.get
                         } 
                     });
                 }
