@@ -1,0 +1,9 @@
+[package]
+name = "rusti"
+description = "a tiny image web service"
+authors = ["ilotterytea <me@ilotterytea.kz>"]
+version = "1.2.0"
+edition = "2024"
+
+[dependencies]
+actix-web = "4.10.2"
