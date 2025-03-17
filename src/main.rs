@@ -2,6 +2,7 @@ use actix_web::{App, HttpServer, web};
 use serde::Serialize;
 
 mod image;
+mod random;
 
 #[derive(Serialize)]
 pub struct Response<T> {
