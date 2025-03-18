@@ -1,4 +1,4 @@
-use rand::{Rng, rng, thread_rng};
+use rand::{Rng, rng};
 
 pub const CHARACTER_POOL: &[u8] = b"ABCDEF123456";
 

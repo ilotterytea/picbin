@@ -6,6 +6,7 @@ use serde::Serialize;
 
 use crate::{
     Response,
+    config::DEFAULT_MIME_TYPES,
     random::{self, generate_random_sequence},
 };
 
@@ -17,6 +18,8 @@ pub struct ImageUpload {
 #[derive(Serialize)]
 struct ImageData {
     pub id: String,
+    pub mime: String,
+    pub extension: String,
 }
 
 pub async fn handle_image_upload(MultipartForm(form): MultipartForm<ImageUpload>) -> HttpResponse {
@@ -28,10 +31,35 @@ pub async fn handle_image_upload(MultipartForm(form): MultipartForm<ImageUpload>
         });
     }
 
+    let mime = match form.file.content_type {
+        Some(m) => m,
+        None => {
+            return HttpResponse::BadRequest().json(Response {
+                status_code: 400,
+                message: Some("Unknown MIME type".into()),
+                data: None::<ImageData>,
+            });
+        }
+    };
+
+    let (_, extension) = match DEFAULT_MIME_TYPES
+        .iter()
+        .find(|(x, _)| (*x).eq(mime.essence_str()))
+    {
+        Some(m) => m,
+        None => {
+            return HttpResponse::BadRequest().json(Response {
+                status_code: 400,
+                message: Some(format!("Unsupported MIME type: {}", mime.essence_str())),
+                data: None::<ImageData>,
+            });
+        }
+    };
+
     let id = generate_random_sequence(6, random::CHARACTER_POOL);
 
     let old_path = form.file.file.path();
-    let new_path = format!("userdata/{}.png", id);
+    let new_path = format!("userdata/{}.{}", id, extension);
 
     if copy(old_path, new_path).is_err() {
         return HttpResponse::InternalServerError().json(Response {
@@ -41,7 +69,11 @@ pub async fn handle_image_upload(MultipartForm(form): MultipartForm<ImageUpload>
         });
     }
 
-    let image_data = ImageData { id };
+    let image_data = ImageData {
+        id,
+        mime: mime.essence_str().to_string(),
+        extension: extension.to_string(),
+    };
 
     HttpResponse::Created().json(Response {
         status_code: 201,
