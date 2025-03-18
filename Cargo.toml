@@ -8,5 +8,7 @@ edition = "2024"
 [dependencies]
 actix-multipart = "0.7.2"
 actix-web = "4.10.2"
+chrono = { version = "0.4.40", features = ["serde"] }
+diesel = { version = "2.2.8", features = ["chrono", "returning_clauses_for_sqlite_3_35", "sqlite"] }
 rand = "0.9.0"
 serde = { version = "1.0.219", features = ["derive"] }

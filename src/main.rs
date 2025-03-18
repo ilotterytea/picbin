@@ -2,6 +2,7 @@ use actix_web::{App, HttpServer, web};
 use serde::Serialize;
 
 mod config;
+mod database;
 mod image;
 mod random;
 
