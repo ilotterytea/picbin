@@ -8,5 +8,6 @@ diesel::table! {
         mime -> Text,
         secret_key -> Text,
         uploaded_at -> Timestamp,
+        modified_at -> Timestamp,
     }
 }

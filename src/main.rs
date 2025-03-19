@@ -24,6 +24,7 @@ async fn main() -> std::io::Result<()> {
             .route("/upload", web::post().to(image::handle_image_upload))
             .route("/{id}", web::get().to(image::handle_image_retrieve))
             .route("/{id}", web::delete().to(image::handle_image_deletion))
+            .route("/{id}", web::put().to(image::handle_image_update))
     })
     .bind((host, port))?
     .run()

@@ -14,6 +14,7 @@ pub struct Image {
     pub mime: String,
     pub secret_key: String,
     pub uploaded_at: NaiveDateTime,
+    pub modified_at: NaiveDateTime,
 }
 
 #[derive(Insertable)]
