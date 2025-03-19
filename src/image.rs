@@ -3,6 +3,7 @@ use std::fs::{copy, create_dir_all, exists};
 use actix_multipart::form::{MultipartForm, tempfile::TempFile};
 use actix_web::{HttpResponse, web};
 use diesel::{ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper};
+use serde::Deserialize;
 
 use crate::{
     Response,
@@ -18,6 +19,11 @@ use crate::{
 #[derive(MultipartForm)]
 pub struct ImageUpload {
     pub file: TempFile,
+}
+
+#[derive(Deserialize)]
+pub struct ImageDeletionQuery {
+    pub key: String,
 }
 
 pub async fn handle_image_upload(MultipartForm(form): MultipartForm<ImageUpload>) -> HttpResponse {
@@ -81,6 +87,7 @@ pub async fn handle_image_upload(MultipartForm(form): MultipartForm<ImageUpload>
             filename: &filename,
             extension,
             mime: mime.essence_str(),
+            secret_key: generate_random_sequence(32, random::CHARACTER_POOL),
         })
         .returning(Image::as_returning())
         .get_result(conn)
@@ -132,4 +139,48 @@ pub async fn handle_image_retrieve(id: web::Path<String>) -> HttpResponse {
             format!("inline; filename=\"{}\"", image.filename),
         ))
         .body(data)
+}
+
+pub async fn handle_image_deletion(
+    id: web::Path<String>,
+    query: web::Query<ImageDeletionQuery>,
+) -> HttpResponse {
+    let conn = &mut establish_connection();
+
+    let image = match im::images.filter(im::id.eq(&*id)).first::<Image>(conn) {
+        Ok(i) => i,
+        Err(_) => {
+            return HttpResponse::NotFound().json(Response {
+                status_code: 404,
+                message: Some(format!("Image ID {} not found", id)),
+                data: None::<Image>,
+            });
+        }
+    };
+
+    if image.secret_key.ne(&query.key) {
+        return HttpResponse::Unauthorized().json(Response {
+            status_code: 401,
+            message: Some("Your secret key doesn't match with the image's secret key!".into()),
+            data: None::<Image>,
+        });
+    }
+
+    if std::fs::remove_file(format!("userdata/{}.{}", image.id, image.extension)).is_err() {
+        return HttpResponse::InternalServerError().json(Response {
+            status_code: 500,
+            message: Some("Failed to delete an image from hard drive. Try later.".into()),
+            data: None::<Image>,
+        });
+    }
+
+    diesel::delete(im::images.filter(im::id.eq(&*id)))
+        .execute(conn)
+        .expect("Error deleting images");
+
+    return HttpResponse::Ok().json(Response {
+        status_code: 200,
+        message: Some("Successfully deleted the image!".into()),
+        data: None::<Image>,
+    });
 }

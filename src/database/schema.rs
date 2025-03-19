@@ -6,6 +6,7 @@ diesel::table! {
         filename -> Text,
         extension -> Text,
         mime -> Text,
+        secret_key -> Text,
         uploaded_at -> Timestamp,
     }
 }

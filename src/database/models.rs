@@ -12,6 +12,7 @@ pub struct Image {
     pub filename: String,
     pub extension: String,
     pub mime: String,
+    pub secret_key: String,
     pub uploaded_at: NaiveDateTime,
 }
 
@@ -22,4 +23,5 @@ pub struct NewImage<'a> {
     pub filename: &'a str,
     pub extension: &'a str,
     pub mime: &'a str,
+    pub secret_key: String,
 }

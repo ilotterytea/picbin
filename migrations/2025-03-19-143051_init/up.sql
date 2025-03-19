@@ -4,5 +4,6 @@ CREATE TABLE "images" (
     "filename" TEXT NOT NULL,
     "extension" TEXT NOT NULL,
     "mime" TEXT NOT NULL,
+    "secret_key" TEXT NOT NULL,
     "uploaded_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
