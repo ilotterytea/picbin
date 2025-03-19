@@ -19,8 +19,12 @@ async fn main() -> std::io::Result<()> {
 
     println!("Running an image web service on {}:{}!", host, port);
 
-    HttpServer::new(|| App::new().route("/upload", web::post().to(image::handle_image_upload)))
-        .bind((host, port))?
-        .run()
-        .await
+    HttpServer::new(|| {
+        App::new()
+            .route("/upload", web::post().to(image::handle_image_upload))
+            .route("/{id}", web::get().to(image::handle_image_retrieve))
+    })
+    .bind((host, port))?
+    .run()
+    .await
 }

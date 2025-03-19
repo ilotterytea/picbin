@@ -1,7 +1,7 @@
 use std::fs::{copy, create_dir_all, exists};
 
 use actix_multipart::form::{MultipartForm, tempfile::TempFile};
-use actix_web::HttpResponse;
+use actix_web::{HttpResponse, web};
 use diesel::{ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper};
 
 use crate::{
@@ -91,4 +91,45 @@ pub async fn handle_image_upload(MultipartForm(form): MultipartForm<ImageUpload>
         message: None,
         data: Some(image),
     })
+}
+
+pub async fn handle_image_retrieve(id: web::Path<String>) -> HttpResponse {
+    let conn = &mut establish_connection();
+
+    let image = match im::images.filter(im::id.eq(&*id)).first::<Image>(conn) {
+        Ok(i) => i,
+        Err(_) => {
+            return HttpResponse::NotFound().json(Response {
+                status_code: 404,
+                message: Some(format!("Image ID {} not found", id)),
+                data: None::<Image>,
+            });
+        }
+    };
+
+    let path = format!("userdata/{}.{}", image.id, image.extension);
+
+    if !exists(&path).unwrap_or(false) {
+        return HttpResponse::NotFound().json(Response {
+            status_code: 404,
+            message: Some(format!("Image ID {} not found", id)),
+            data: None::<Image>,
+        });
+    }
+
+    let Ok(data) = std::fs::read(path) else {
+        return HttpResponse::InternalServerError().json(Response {
+            status_code: 500,
+            message: Some("Failed to read image data".into()),
+            data: None::<Image>,
+        });
+    };
+
+    HttpResponse::Ok()
+        .insert_header(("Content-Type", image.mime))
+        .insert_header((
+            "Content-Disposition",
+            format!("inline; filename=\"{}\"", image.filename),
+        ))
+        .body(data)
 }
