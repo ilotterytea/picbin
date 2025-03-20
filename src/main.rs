@@ -5,6 +5,7 @@ mod config;
 mod database;
 mod image;
 mod random;
+mod view;
 
 #[derive(Serialize)]
 pub struct Response<T> {
@@ -25,6 +26,10 @@ async fn main() -> std::io::Result<()> {
             .route("/{id}", web::get().to(image::handle_image_retrieve))
             .route("/{id}", web::delete().to(image::handle_image_deletion))
             .route("/{id}", web::put().to(image::handle_image_update))
+            .route(
+                "/static/{filename:.*}",
+                web::get().to(view::handle_static_file),
+            )
     })
     .bind((host, port))?
     .run()
