@@ -1,8 +1,11 @@
 use std::path::Path;
 
-use actix_web::{HttpResponse, web};
+use actix_web::{HttpResponse, Responder, web};
+use handlebars::Handlebars;
+use serde_json::json;
 
 const STATIC_FILES: include_dir::Dir = include_dir::include_dir!("static");
+const TEMPLATE_FILES: include_dir::Dir = include_dir::include_dir!("templates");
 
 pub async fn handle_static_file(filename: web::Path<String>) -> HttpResponse {
     let path = &*filename;
@@ -27,4 +30,23 @@ pub async fn handle_static_file(filename: web::Path<String>) -> HttpResponse {
             ),
         ))
         .body(file.contents())
+}
+
+pub fn register_handlebars_templates(hb: &mut Handlebars<'_>) {
+    for template in TEMPLATE_FILES.files() {
+        let Some(contents) = template.contents_utf8() else {
+            continue;
+        };
+
+        let name = template.path().file_name().unwrap().to_str().unwrap();
+
+        hb.register_template_string(name, contents)
+            .expect("Error loading template");
+    }
+}
+
+pub async fn get_index_view(hb: web::Data<Handlebars<'_>>) -> impl Responder {
+    let body = hb.render("index.hbs", &json!({})).unwrap();
+
+    web::Html::new(body)
 }

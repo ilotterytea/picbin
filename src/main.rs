@@ -1,4 +1,5 @@
 use actix_web::{App, HttpServer, web};
+use handlebars::Handlebars;
 use serde::Serialize;
 
 mod config;
@@ -20,16 +21,25 @@ async fn main() -> std::io::Result<()> {
 
     println!("Running an image web service on {}:{}!", host, port);
 
-    HttpServer::new(|| {
+    let mut hb = Handlebars::new();
+    view::register_handlebars_templates(&mut hb);
+
+    let hb = web::Data::new(hb);
+
+    HttpServer::new(move || {
         App::new()
-            .route("/upload", web::post().to(image::handle_image_upload))
-            .route("/{id}", web::get().to(image::handle_image_retrieve))
-            .route("/{id}", web::delete().to(image::handle_image_deletion))
-            .route("/{id}", web::put().to(image::handle_image_update))
+            .app_data(hb.clone())
+            // frontend
+            .route("/", web::get().to(view::get_index_view))
             .route(
                 "/static/{filename:.*}",
                 web::get().to(view::handle_static_file),
             )
+            // image management
+            .route("/upload", web::post().to(image::handle_image_upload))
+            .route("/{id}", web::get().to(image::handle_image_retrieve))
+            .route("/{id}", web::delete().to(image::handle_image_deletion))
+            .route("/{id}", web::put().to(image::handle_image_update))
     })
     .bind((host, port))?
     .run()
